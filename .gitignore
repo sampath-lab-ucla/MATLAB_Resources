@@ -17,15 +17,12 @@ slprj/
 
 # Custom filters
 TMP*.m
-DEV.m
-UNDEV.m
 ._*
 _*
 *.mlappinstall
 *.bak
 TODO*
-clearIrisPreferences.m
-
+*.zip
 
 # OS generated files 
 .DS_Store
