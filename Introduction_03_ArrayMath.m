@@ -87,3 +87,7 @@ line(ax,meanA([2,2]),ax.YLim, 'linewidth',2,'color',ax.ColorOrder(2,:));
 % 
 % Solving Systems of Linear Equations
 %
+%% New section
+%
+%  Formatted code block
+%
