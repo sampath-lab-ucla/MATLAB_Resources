@@ -91,3 +91,11 @@ line(ax,meanA([2,2]),ax.YLim, 'linewidth',2,'color',ax.ColorOrder(2,:));
 %
 %  Formatted code block
 %
+%
+%   %syntax highlighted code block
+%   A = 23 + 2;
+%   B = A * ones(10,10);
+
+% actual code block
+A = 23 + 2;
+B = A * ones(10,10);
