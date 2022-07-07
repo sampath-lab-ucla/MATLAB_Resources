@@ -46,8 +46,17 @@ dualSequence = sequence ./ [1,10]
 %% *Calculating Statistics Of Vectors*
 % *Common Statistical Functions*
 % 
-% *Using |min| and |max*|
-% 
+% *Using |min| and |max|*
+%
+%   A = [1 2 3; 4 5 6];
+%   M = min(A);
+%
+% Furthermore many of the built in statistical functions will return the index as the second output:
+%
+%   [M, I] = min(A);
+%
+% Remember to read the MATLAB help pages for info on the specific functions that you want to use. 
+%
 % *Ignoring NaNs*
 % When using statistical functions, you can ignore NaN values
 %%
@@ -56,9 +65,10 @@ dualSequence = sequence ./ [1,10]
 %
 % Statistical Operations on Matrices
 % Some common mathematical functions which calculate a value for each column 
-% in a matrix include:
+% in a matrix include: mean, median, std
 % 
-% 
+%   A = [1 2; 2 3; 4 5; 6 7];
+%   M = median(A);
 % 
 % Many statistical functions accept an optional dimensional argument that specifies 
 % whether the operation should be applied to columns independently (the default) 
@@ -80,11 +90,29 @@ hold('on');
 h2 = histogram(ax,A(:,2)); % orange
 line(ax,meanA([1,1]),ax.YLim, 'linewidth',2,'color',ax.ColorOrder(1,:));
 line(ax,meanA([2,2]),ax.YLim, 'linewidth',2,'color',ax.ColorOrder(2,:));
-% Matrix Multiplication
+%
+%% *Matrix Multiplication*
 % Matrix multiplication requires that the inner dimensions agree. The resultant 
 % matrix has the outer dimensions.
-% 
-% 
+%
+%    X = [1 2; 3 4; 5 6];
+%    Y = [7; 8; 9];
+%    Y * X
+%
+% *Gives an error:*
+%
+%    Error using  * 
+%    Incorrect dimensions for matrix multiplication. Check
+%    that the number of columns in the first matrix
+%    matches the number of rows in the second matrix. To
+%    operate on each element of the matrix individually,
+%    use TIMES (.*) for elementwise multiplication.
+%
+%    Y' * X
+%
+% *Works!*
+%
+%
 % Solving Systems of Linear Equations
 %
 %% New section
