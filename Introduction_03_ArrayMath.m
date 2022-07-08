@@ -58,6 +58,10 @@ y = amplitude * sin( 2 * pi * f * t + shiftAngle );
 % accordingly.
 % 
 
+
+figure;
+axes("NextPlot",'add');
+
 %@
 plot(t,y);
 ylabel("Y");
@@ -88,6 +92,9 @@ xlabel("Time (sec)");
 
 %!
 ft = 2 * pi * f * t + shiftAngle;
+figure;
+axes("NextPlot",'add');
+
 plot(t, amplitude * sin(ft) );
 ylabel("Y");
 xlabel("Time (sec)");
@@ -124,6 +131,8 @@ zsquared = amplitude * cos( 2 * pi * f * t.^2 + shiftAngle );
 
 %!
 % Now plot:
+figure;
+axes("NextPlot",'add');
 plot(t,ysquared.*zsquared);
 ylabel("Y");
 xlabel("Time (sec)");
@@ -202,9 +211,9 @@ meanA = mean(A,1);
 
 % Plot
 fig = figure;
-ax = axes(fig);
+ax = axes(fig,"NextPlot",'add');
 h1 = histogram(ax,A(:,1)); % blue
-hold('on');
+hold('on'); % not needed if nextplot='add'
 h2 = histogram(ax,A(:,2)); % orange
 line(ax,meanA([1,1]),ax.YLim, 'linewidth',2,'color',ax.ColorOrder(1,:));
 line(ax,meanA([2,2]),ax.YLim, 'linewidth',2,'color',ax.ColorOrder(2,:));
@@ -333,7 +342,7 @@ R_Super = T_Super * c;
 
 %!
 fig2 = figure;
-ax2 = axes(fig2);
+ax2 = axes(fig2,"NextPlot",'add');
 %@
 plot(ax2,t,R,'.k','markersize',22);
 line(tSuper,R_Super,'color','r');
