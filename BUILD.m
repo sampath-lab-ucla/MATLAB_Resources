@@ -18,7 +18,7 @@ function BUILD(override,opts)
   [~,~] = mkdir(fullfile(root,"releases"));
 
   % parse inputs
-  if numel(override) == 1 && override(1) == "none"
+  if numel(override) == 1 && override{1} == "none"
     override = [];
   end
   if ~isempty(override)
@@ -93,8 +93,14 @@ function BUILD(override,opts)
     end
     return
   end
-
+  
+  if opts.verbose
+    fprintf("Packaging... ");
+  end
   makePackage(root);
+  if opts.verbose
+    fprintf("Done!\n\nBuild Complete!\n");
+  end
 end
 
 %% CONTENTS
@@ -280,13 +286,13 @@ function status = parseMToMlx(srcFile,dstFile,executeKey)
   end
 
   % parse code file
-  sourceCode = fileread(srcFile);
+  sourceCode = readlines(srcFile);
 
   % Support strings
   plainCode = convertStringsToChars(sourceCode);
 
   % convert to string array
-  stringCode = string(strsplit(plainCode,'\n')');
+  stringCode = string(plainCode);
   
   % Parse special syntax for sticky code blocks
   protectedBlocks = find(~cellfun(@isempty,regexp(stringCode,'^%!','once'),'unif',1));

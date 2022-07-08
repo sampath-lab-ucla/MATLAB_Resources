@@ -83,7 +83,32 @@ incrementedNum
 % that allows one to actually work towards a goal. Just like learning a spoken 
 % language, we must know how statements are strung together, how statements are 
 % terminated, and what order operations may take.
-%% Continuing Statements
+%%% COMMENTS!!!!!
+% I cannot stress enough just how important commenting your code is. Below, we will
+% describe some of the best practices when creating code while we explore the syntax
+% rules of MATLAB. One piece of coding that is very often overlooked, and thus a bad
+% habit of misusing or lacking altogether is formed, is the practice of commenting
+% your code. Comments are non-functional bits of language that you insert into the
+% code to inform a reader (often yourself) of what the bits of code are actually
+% trying to do. You must stop reading this document now and go to the MATLAB style
+% guidelines at <https://www.mathworks.com/help/matlab/matlab_prog/comments.html> and
+% <https://sites.google.com/site/matlabstyleguidelines/> now. Once you've read the
+% style for layout and commenting, please return here.
+%
+% To comment your code, you use the percent symbol |%|. It is usually good practice
+% to comment above a chunk of code.
+
+%!
+% This is a comment.
+%{
+This is a block comment.
+%}
+
+% Store a number for use later with process XXX.
+XXXScale = 3.14;
+
+
+%%% Continuing Statements
 % When writing a long statement, we may come to a point where the readability 
 % is affected by having to scroll horizontally. MATLAB provides a simple syntax 
 % for breaking long statements onto multiple lines so MATLAB can interpret the 
@@ -94,7 +119,7 @@ incrementedNum
 %!
 someResult = 1 - 1/2 + 1/3 - 1/4 + 1/5 ...
   - 1/6 + 1/7 - 1/8 + 1/9
-%% 
+%%% 
 % Depending on your MATLAB preferences, after typing the ellipsis and pressing 
 % enter, your code should indent by 2 or 4 spaces. If you ever use code written 
 % by someone else, it will likely have either 2 or 4 spaces for every indentation 
@@ -105,7 +130,7 @@ someResult = 1 - 1/2 + 1/3 - 1/4 + 1/5 ...
 sequence = 'GATAGATARCG';
 validLetters = sequence=='A'|sequence =='T'|sequence=='C'|sequence=='G';
 
-%% 
+%%% 
 % Even though this statement fits nicely on a single line, if you have 2 or 
 % more statements like this and a smattering of comments, this would become all 
 % but entirely unreadable. We can use the ellipsis to improve the readability 
@@ -245,3 +270,57 @@ A = [1, 0 2, 3 3]
 % the semantics of coded statements. We introduced the basics of the MATLAB language 
 % and highlighted a few features of the interpreter. We will continue to use these 
 % principals as we progress to more and more complex operations and analyses.
+%% Common Errors
+% You will undoubtedly come across an error, bug, mistake, etc., in your own code and
+% in the code of others. This can come in the form of a typo, where you missed a
+% capitalization in a variable name, a misused operator, copy-pasting code from
+% stackoverflow.com without knowing what it does, or calling a function that isn't
+% available, to name a few. While it may feel like the end of the world, it isn't.
+% You may also feel silly or stupid, you're definitely not. These bugs eat at the
+% best of us and the key is to identify the problem, and then squash it (or remove it
+% kindly if you're able to maintain that level of control). Sometimes the mistakes we
+% make don't actually cause an error. Instead, we get a totally unexpected result.
+% The best thing we can do is to learn to pay attention to the details of our code
+% (and others) through useful, succint commenting, and remember to frequently check
+% your work, especially when working with data. The following 3 rules will help
+% prevent making some of the most common mistakes.
+%
+% # Each statement must be interpretable on its own. That is, you cannot end a
+% statement with a |+| or before the closing of an open bracket.
+% # Capitalization and punctuation matter. |a| and |A| are considered differnt
+% varaible names.
+% # All orders of operations must be made explicit. This is really a best practice
+% consideration. In mathematical operations, you may be used to writing someting like
+% |2a/2b| for the statement, $2\frac{a}{2b}$. This is incorrect formatting. To
+% produce the statement in MATLAB, one would write:
+%
+%   2*a/(2*b)
+%
+% with the |2*b| explicitly grouped in the denominator. MATLAB will make some
+% assumptions about the order of operations (see
+% <https://www.mathworks.com/help/matlab/matlab_prog/operator-precedence.html
+% operator precedence>), but sometimes it is unclear. Certainly, there will be times
+% when you encounter code that you cannot run by itself because of some dependencies
+% that are unclear. If this code is properly formatted and syntactically sound, you
+% can understand it easily. If it looks like foo-vomit, your guess is as good as a
+% marmot's.
+% 
+% Check your undertanding, what does the following line of code produce?
+%
+%   1:1:10/10
+%
+%%% 
+% How about this one?
+%
+%   1:1:10./10
+%
+%%%
+% And this?
+%
+%   (1:1:10)./10
+%
+%%%
+% Cheers!
+
+
+
