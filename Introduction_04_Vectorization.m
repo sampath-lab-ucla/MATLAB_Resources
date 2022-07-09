@@ -152,7 +152,11 @@ isequal(sum(values),summedValues)
 % sum and count, respectively, of values. Use these values to then calculate the 
 % mean of |values| and store the answer in a variable named |meanValues|. Disply the 
 % output using |disp|. Recall that, generally speaking the arithmetic mean is 
-% calculated by % $\bar{x}=\frac{1}{N}\sum_{i=1}^{N}x_i$ where $i$ is the index and 
+% calculated by:
+% 
+% $$\bar{x}=\frac{1}{N}\sum_{i=1}^{N}x_i$$
+% 
+% where $i$ is the index and 
 % $N$ is number of elements in $x$.
 %
 
@@ -173,11 +177,82 @@ meanValues = sumValues / valueCount;
 isequal(mean(values),meanValues)
 
 %% Loops that calculate a new value
-% Often we need to perform some operation iteratively and keep track of the result
+% We often need to perform some operation iteratively and keep track of the result
 % generated on each iteration. The best way (at least in terms of readability) is to
-% first initialize the storage variable and then populate it iteration by iteration. 
+% first initialize the storage variable and then populate it iteration by iteration.
+% Generally speaking, we tend to have some idea how many iterations we will need for
+% a process like this and so the |for| loop is usually the best approach.
+% 
+% To initialize a storage variable we simple create the variable with the appropriate
+% type and size. For this example we will assume we have the following data matrix
+% and we want to compute an average of each row.
 % 
 
+%!
+rng(1984)
+dataMatrix = randn(5,10) * 2 + ((1:5).^2).';
+figure("color",[1,1,1]);
+axes("nextplot",'add');
+plot(1:5,dataMatrix,'-.o');
+xlabel("Index");
+ylabel("Value");
 
+%%%
+% Now, we can initialize our storage variable which will be a 5 element column
+% vector. We can initialize it with any numeric value, it is good to make sure the
+% initializing value won't interfere with any operations. In MATLAB, we can simply
+% initialize as an empty matrix, i.e., |A = []|, but this doesn't allocate space in
+% memory. Instead, since we know we are using numeric values, let's create an array
+% of |NaN|, which are double-precision (see Data Types in the next module)
+% not-a-number values.
+%
 
+%!
+nRows = size(dataMatrix,1); % calculate the number of rows we will analyze
+rowMeans = nan(nRows,1); % initialize
+for row = 1:nRows % iterate of the row indices
+  rowMeans(row) = mean(dataMatrix(row,:));
+end
+% append the line to the plot in thicker red
+line(1:5,rowMeans,'color','r','linewidth',2,'marker','x');
+
+% compare to builtin function
+isequal(rowMeans,mean(dataMatrix,2))
+
+%%% *Task 2* 
+% Use the defined data vector, |datVec|, and grouping variable, |grpInds|, below.
+% Produce a |groupMeans| column vector of means from |datVec| based on the |unique| 
+% groups in |grpInds|. Store the unique groups in a variable called |groups|.
+%
+
+%!
+rng(2022); % random seed
+% construct random normal data vector
+datVec = reshape(randn(10,5) * 2 + ((0:5:20).^2),1,[]); %row vector
+% construct ordered grouping
+grpInds = reshape(ones(10,1) * (1:5),1,[]);
+% shuffle data
+shuffleInds = randperm(50);
+datVec = datVec(shuffleInds);
+grpInds = grpInds(shuffleInds);
+% plot the data
+figure("color",[1,1,1]);
+axes("nextplot",'add');
+plot(grpInds,datVec,'ko');
+
+%@
+groups = unique(grpInds);
+nGroups = numel(groups);
+groupMeans = nan(nGroups,1);
+for g = 1:nGroups
+  group = groups(g);
+  grpData = datVec(grpInds == group);
+  groupMeans(g) = mean(grpData); %populate storage
+end
+
+%!
+% Plot the group means 
+line(groups,groupMeans,'linestyle','none','color','r','marker','+','markersize',12);
+xlabel("Index");
+ylabel("Value");
 

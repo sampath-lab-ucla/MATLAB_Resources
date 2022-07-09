@@ -1,6 +1,9 @@
-%% Working With Strings
-% In this document we will cover some basic uses for working with character arrays
+%% Conditional Statements
+% In this document we will cover some details of conditional statements with numbers 
 % and strings.
+%% What is a condition?
+% 
+%
 %% Strings and Character Arrays
 %
 %% Locating A Substring
