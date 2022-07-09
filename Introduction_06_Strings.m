@@ -1,6 +1,6 @@
-%% Regular Expressions
+%% Working With Strings
 % In this document we will cover some basic uses for working with character arrays
-% and string.
+% and strings.
 %% Strings and Character Arrays
 %
 %% Locating A Substring

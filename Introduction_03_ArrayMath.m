@@ -29,7 +29,7 @@
 % 
 % To make a sine wave, we use the following mathematical formula, 
 % 
-% $$y(t)=A\sin(2\pi f t+\theta)$$
+% $$y(t)=A\sin(2\pi f t+\varphi)$$
 % 
 % Where $A$ is the amplitude, $f$ is the frequency in Hertz, $t$ is the timepoint 
 % and $\theta$ is the phase angle in radians.
@@ -126,14 +126,14 @@ tSquared = t.^2;
 % 
 
 %@
-ysquared = amplitude * sin( 2 * pi * f * t.^2 + shiftAngle );
-zsquared = amplitude * cos( 2 * pi * f * t.^2 + shiftAngle );
+ySquared = amplitude * sin( 2 * pi * f * tSquared + shiftAngle );
+zSquared = amplitude * cos( 2 * pi * f * tSquared + shiftAngle );
 
 %!
 % Now plot:
 figure;
 axes("NextPlot",'add');
-plot(t,ysquared.*zsquared);
+plot(t,ySquared.*zSquared);
 ylabel("Y");
 xlabel("Time (sec)");
 
@@ -203,7 +203,7 @@ M = median(A);
 
 
 %!
-A = randn(100,2);
+A = randn(100,2); % note this overwrites previous definition of A
 A(:,1) = A(:,1) * 2 + 20; % sd==2, mean==20
 A(:,2) = A(:,2) * 5; % sd==5, mean==0
 % calculate the mean of each column
