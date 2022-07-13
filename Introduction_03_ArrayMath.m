@@ -177,6 +177,15 @@ dualSequence = sequence ./ [1,10]
 % 
 %   avg = mean(v,"omitnan")
 %
+%%%
+% Some statistical operations seemingly ignore |NaN|s altogether.
+% 
+%   absValues = abs(values);
+% 
+% And others cannot work with any |NaN|s.
+% 
+%   isOddNum = mod(nan(1,1),2);
+% 
 %% Statistical Operations on Matrices
 % Some common mathematical functions which calculate a value for each column 
 % in a matrix include:

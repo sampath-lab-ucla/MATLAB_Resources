@@ -149,7 +149,7 @@ isequal(sum(values),summedValues)
 %%% *Task 1*
 % 
 % Using a for loop, update two variables called |sumValues| and |valueCount| with the
-% sum and count, respectively, of values. Use these values to then calculate the 
+% sum and count of |values|, respectively. Use these variable to then calculate the 
 % mean of |values| and store the answer in a variable named |meanValues|. Disply the 
 % output using |disp|. Recall that, generally speaking the arithmetic mean is 
 % calculated by:
@@ -220,6 +220,7 @@ line(1:5,rowMeans,'color','r','linewidth',2,'marker','x');
 isequal(rowMeans,mean(dataMatrix,2))
 
 %%% *Task 2* 
+% 
 % Use the defined data vector, |datVec|, and grouping variable, |grpInds|, below.
 % Produce a |groupMeans| column vector of means from |datVec| based on the |unique| 
 % groups in |grpInds|. Store the unique groups in a variable called |groups|.
@@ -251,8 +252,96 @@ for g = 1:nGroups
 end
 
 %!
-% Plot the group means 
+% use line() to add the group means to plot
 line(groups,groupMeans,'linestyle','none','color','r','marker','+','markersize',12);
 xlabel("Index");
 ylabel("Value");
 
+%% Loop execution control
+% *|break|*
+% It is often useful to terminate a loop early, or to skip an iteration based on  
+% some desired condition. To exit out of a loop entirely, we can use the |break;| 
+% statement. Usually we would break a loop when some condition is met. For example, 
+% we might setup a while loop to run until we encounter an particular condition
+% 
+%   while true
+%     result = 1/randn(1); % may result in Inf
+%     if isinf(result)
+%       break;
+%     end
+%   end % end of while
+%
+%%% *Task 3*
+% 
+% Generate a Gaussian random row vector, |A|, of 1000 elements. Iterate over the 
+% values of |A| until the value exceeds the interval $\[-2,2\]$. Report the 
+% iteration number and the value that first exceeds the interval.
+% 
+
+%!
+rng(1024)
+%@
+A = randn(1,1000);
+for iter = 1:numel(A)
+  value = A(iter);
+  if abs(value) > 2
+    disp("Iteration:");
+    disp(iter);
+    disp("Value:");
+    disp(value);
+    break;
+  end
+end
+
+%%% 
+% *|continue|*
+% To force skip to the next iteration of the loop, we can use the 
+% |continue;| statement. Typically we would |continue| based on some condition not 
+% met by the iteration. A real world example would be selecting files from a folder 
+% of data, we may encounter a data file that isn't the correct format or type. We   
+% would want to skip that file. It might look something like this:
+%
+%   fileList = dir("*.mat");
+%   for file = fileList'
+%     S = load(file.name);
+%     % Check for a DATA variable
+%     if ~isfield(S,'DATA') % read: if 'DATA' is not a field of S
+%       % No DATA varaible so skip this file
+%       continue;
+%     end
+%     % the code below only runs when DATA is detected
+%     % plot data
+%     figure();
+%     % for example, assume the DATA variable contains fields X and Y
+%     plot(S.DATA.X, S.DATA.Y,":");
+%     % add the file name to the plot title
+%     title(regexprep(file.name,"_"," ")); %replace "_" with " "
+%   end
+% 
+%%%
+% In the above example, we use a conditional statement to validate the loaded file. 
+% In future lectures we will dive into conditional programming much deeper. For now, 
+% suffice it to say, you'll need to be able to readily combine tools and develop a 
+% habit of testing your code often.
+% 
+%%% *Task 4*
+%
+% Create a loop that selective displays whole numbers in a sequence from 1 through 
+% 50 that are divisible by 7.
+% 
+
+%@
+for num = 1:50
+  if mod(num,7)
+    disp(num)
+  end
+end
+
+%% Vectorized Operations
+% As we saw in the Array Math module, MATLAB(R) has a number of built-in features 
+% that allow for easy manipulation of data. So far, we have been talking about 
+% looping over vectors and producing either a new value for each iteration, a 
+% cumulative value updated at each iteration, or displaying some value. In the 
+% following section, we will combine these principals to generate a simple analysis. 
+% 
+% 

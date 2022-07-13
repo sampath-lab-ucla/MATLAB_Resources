@@ -5,9 +5,9 @@ This repo contains training and reference documentation for how we use MATLAB in
 ## Installation
 
 Get the latest zip archive file from the releases page. Unzip the file contents to an 
-unprivaleged local directory. Navigate the MATLAB to the unzipped directory and 
-open the desired live script or open the `CONTENTS.mlx` for an overview of the files.
-Each live script will have the student form and an associated `_key` form. 
+unprivaleged local directory. Navigate the MATLAB current folder to the unzipped 
+directory and open the desired live script or open the `CONTENTS.mlx` for an overview 
+of the files. Each live script will have the student form and an associated `_key` form. 
 
 Alternatively, clone this repo and run `BUILD` from the MATLAB command window. The
 zip file will be created in the `releases` subdirectory. Unzip the archive as 
