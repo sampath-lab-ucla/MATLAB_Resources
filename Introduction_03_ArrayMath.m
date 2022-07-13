@@ -15,9 +15,9 @@
 %% Mathematical Functions
 % Among the vast number of functions that come pre-packaged with MATLAB are 
 % functions which have a sole purpose of performing mathematical operations. Such as 
-% taking $sine(\theta)$, or computing some statistical summary like |$\bar{X}|. The 
+% taking $sine(\theta)$, or computing some statistical summary like $\bar{X}$. The 
 % major advantage the MATLAB has over other languages is the automatic vectorization 
-% of these functions. That is, if the input to the mathimatical function is a 
+% of these functions. That is, if the input to the mathematical function is a 
 % matrix, then the result is a matrix of the same size with the function applied to 
 % each element. For example, 
 % 
@@ -32,7 +32,7 @@
 % $$y(t)=A\sin(2\pi f t+\varphi)$$
 % 
 % Where $A$ is the amplitude, $f$ is the frequency in Hertz, $t$ is the timepoint 
-% and $\theta$ is the phase angle in radians.
+% and $\varphi$ is the phase angle in radians.
 % 
 % Let's make a sine with an amplitude of 2, a frequency of 1Hz, and 0 phase shift, 
 % which lasts for a duration of 2 seconds and is sampled at a frequency of 100Hz.
@@ -99,6 +99,14 @@ plot(t, amplitude * sin(ft) );
 ylabel("Y");
 xlabel("Time (sec)");
 
+%%% Task 1 Create and plot a second sine wave (like the example above) that is $90^{\circ}$ out of phase with the one above.
+%
+
+%@
+hold on;
+ft2 = ft + pi;
+plot(t, amplitude * sin(ft2), 'r');
+
 %% Element-Wise Operations
 % MATLAB has a special operator which forces it to perform an element-wise 
 % operation. Generally speaking, MATLAB will try to automagically figure out your 
@@ -121,8 +129,7 @@ tSquared = t.^2;
 % 
 % <<lib/img/matrixPowerError.png>>
 % 
-% *Task* Let's create a sine and cosine using the |tSquared| variable as we made |y| 
-% earlier. Let's call the new variables |ySquared| and |zSquared|.
+%%% Task 1 Let's create a sine and cosine using the |tSquared| variable as we made |y| earlier. Let's call the new variables |ySquared| and |zSquared|.
 % 
 
 %@
@@ -149,6 +156,15 @@ xlabel("Time (sec)");
 sequence = reshape(1:20,10,2)
 dualSequence = sequence ./ [1,10]
 
+%%% Task 1 Using implict expansion, create a 5x3 matrix A, where the 3 columns are filled with the values 1, 2 and 3.
+
+%@
+A = zeros(5,3) + [1, 2, 3]
+
+%%% Task 2 Create another 5x3 matrix B where the first row is like in A, the second row is 1/2 A, the third row is 1/3 A ...
+
+%@
+B = A ./ (1:5)'
 
 %% Calculating Statistics Of Vectors
 % Common Statistical Functions
@@ -355,3 +371,11 @@ ax2 = axes(fig2,"NextPlot",'add');
 %@
 plot(ax2,t,R,'.k','markersize',22);
 line(tSuper,R_Super,'color','r');
+
+%%%
+% *Bonus Task* Try to calculate the coefficients using the |/| operator instead of |\|. Name the vector d and compare it to c.
+%
+
+%@
+d = (R'/T')';
+c == d
