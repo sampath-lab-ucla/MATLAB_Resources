@@ -99,7 +99,8 @@ plot(t, amplitude * sin(ft) );
 ylabel("Y");
 xlabel("Time (sec)");
 
-%%% Task 1 Create and plot a second sine wave (like the example above) that is $90^{\circ}$ out of phase with the one above.
+%%% Task 3 
+% Create and plot a second sine wave (like the example above) that is $90^{\circ}$ out of phase with the one above.
 %
 
 %@
@@ -138,13 +139,19 @@ zSquared = amplitude * cos( 2 * pi * f * tSquared + shiftAngle );
 
 %!
 % Now plot:
-figure;
-axes("NextPlot",'add');
-plot(t,ySquared.*zSquared);
-ylabel("Y");
-xlabel("Time (sec)");
+fig1 = figure;
+ax1 = axes(fig1,"NextPlot",'add');
+ax1.YLabel.String = "Y";
+ax1.XLabel.String = "Time (sec)";
 
-%% Implicit Expansion
+line(t,ySquared.*zSquared,'color',[0,0,0]);
+
+%%%
+% Note: We are using the |line| function instead of |plot|? |line| is the low-level
+% version which gives you more control over the plotting mechanisms. Have a look at
+% |doc line| for more information.
+%
+%% Implicit/Explicit Expansion
 % Another form of implicit expansion occurs when two arrays with a shared 
 % dimensional size are operated on.
 % 
@@ -156,16 +163,71 @@ xlabel("Time (sec)");
 sequence = reshape(1:20,10,2)
 dualSequence = sequence ./ [1,10]
 
-%%% Task 1 Using implict expansion, create a 5x3 matrix A, where the 3 columns are filled with the values 1, 2 and 3.
+%%% Task 1 
+% Using implict expansion, create a 5x3 matrix A, where the 3 columns are filled 
+% with the values 1, 2 and 3.
+%
 
 %@
-A = zeros(5,3) + [1, 2, 3]
+A = zeros(5,1) + [1, 2, 3]
 
-%%% Task 2 Create another 5x3 matrix B where the first row is like in A, the second row is 1/2 A, the third row is 1/3 A ...
+%%% Task 2 Create another 5x3 matrix B where the first row is like in A, the second 
+% row is 1/2 A, the third row is 1/3 A, and so on until the fifth row is 1/5 A.
 
 %@
 B = A ./ (1:5)'
 
+%%%
+% Explicit expansion is sometimes required by a desired operation. Explicit expansion
+% takes the same form as element-wise operations. The difference here is you might
+% have a vector and matrix and you might want to perform an operation that is not
+% supported by implicit expansion (note: there are very few of these cases in modern
+% MATLAB versions). For example, suppose you wanted to take a row vector |A| and repeat
+% it 5 times in a columnar orientation.
+%
+
+
+%!
+% Get just the first row of A
+rowA = A(1,:);
+
+%%%
+% Above, we used implicit expansion and asked MATLAB to simply add the row |[1,2,3]|
+% to a 5-element column of zeros. MATLAB created the desired |5x3| matrix implicitly.
+% What if you already had a matrix of zeros, say |z = zeros(5,3);|? MATLAB would,
+% again, automatically imply that the row should be added to each column for every
+% row. We can check this in the following way:
+
+%!
+z = zeros(5,3); % zeros matrix
+matA = z + rowA;
+
+%%%
+% If we expand |rowA| into the same sized matrix as |z|, then the |plus| operation
+% will continue in an array-like fashion (element-wise) and we have performed
+% explicit expansion.
+% 
+
+%!
+expandedA = repmat(rowA,5,1);
+% alternatively, we can use matrix multiplication
+matrixMultA1 = ones(5,1) * rowA;
+matrixMultA2 = ones(5,1) .* rowA;
+
+% expandedA is the result, we can still add it to z if we want
+isequal(        ...
+  A,            ... % double implicit
+  matA,         ... % single implicit
+  expandedA,    ... % repeated matrix
+  matrixMultA1, ... % outer product (mtimes)
+  matrixMultA2, ... % outer product (times)
+  expandedA + z ... % element-wise addition
+  )
+
+%%% 
+% Can you think of why the matrix and array multiplications are producing the same
+% result when used this way?
+%
 %% Calculating Statistics Of Vectors
 % Common Statistical Functions
 % 
@@ -224,26 +286,71 @@ M = median(A);
 % 
 % <<lib/img/matrixDimensions.png>>
 % 
-% 
+%%%
+% Notice the implicit expansion used below.
+%
 
 
 %!
-A = randn(100,2); % note this overwrites previous definition of A
-A(:,1) = A(:,1) * 2 + 20; % sd==2, mean==20
-A(:,2) = A(:,2) * 5; % sd==5, mean==0
-% calculate the mean of each column
-meanA = mean(A,1);
+rng(12345);
+A = randn(100,3); % note this overwrites previous definition of A
 
+% set A to have all have std of 1
+A = A ./ std(A);
+
+% set A to have std of 2,10,3
+A = A .* [2,5,3];
+
+% set A column means to 20,0,10
+A = A + [20,0,10];
+
+% calculate mean and std (by default stats are calculated down columns)
+meanA = mean(A);
+stdA = std(A); 
+
+%%%
+% Below is a more advanced way of plotting. We will begin to use advanced plotting
+% techniques in examples to give more and more exposure to plotting mechanisms. Take
+% notes, inspect the code, play with it and see if you can start making your plots
+% nicer and nicer.
+
+%!
 % Plot
-fig = figure;
-ax = axes(fig,"NextPlot",'add');
-h1 = histogram(ax,A(:,1)); % blue
-hold('on'); % not needed if nextplot='add'
-h2 = histogram(ax,A(:,2)); % orange
-line(ax,meanA([1,1]),ax.YLim, 'linewidth',2,'color',ax.ColorOrder(1,:));
-line(ax,meanA([2,2]),ax.YLim, 'linewidth',2,'color',ax.ColorOrder(2,:));
+fig = figure('Color',[1,1,1]);
+ax = axes(fig);
+ax.NextPlot = 'add'; % like hold(ax,'on')
+ax.XLabel.String = "A";
+ax.YLabel.String = "Count";
+hists = gobjects(1,3);
+hists(1) = histogram(ax,A(:,1),'BinMethod','fd'); % blue
+hists(2) = histogram(ax,A(:,2),'BinMethod','fd'); % orange
+hists(3) = histogram(ax,A(:,3),'BinMethod','fd'); % yellow
+% force update of drawing
+drawnow();
+% get the current range of the y limit
+yAxisRange = diff(ax.YLim); % ylim(2) - ylim(1);
 
+% Draw lines at means of histograms
+% note: will talk about for loops next
+for idx = 1:size(A,2)
+  % Draw |-| at std of each mean and vertical line at mean
+  eb = meanA(idx) + [-1,1].*stdA(idx);
+  line( ...
+    ax, ...
+    [eb([1,1,2;1,2,2]),meanA([idx,idx])'], ... % X
+    [yAxisRange .* (0.98 + [1,0,1;-1,0,-1] .* 0.02),ax.YLim.'], ... % Y
+    'linewidth',1, ...
+    'color',ax.ColorOrder(idx,:), ...
+    'handlevis', 'off' ... % hides from legend
+    );
+  % update histogram label
+  hists(idx).DisplayName = sprintf("$\\mathcal{N}(%2.0f,%2.0f)$",meanA(idx),stdA(idx));
+end
+legend(ax,'Location','northwest','Interpreter','latex');
 
+%%%
+% What do you notice about the bin sizes of the histograms?
+% 
 %% Matrix Multiplication
 % Matrix multiplication requires that the inner dimensions agree. The resultant 
 % matrix has the outer dimensions.
@@ -266,8 +373,10 @@ line(ax,meanA([2,2]),ax.YLim, 'linewidth',2,'color',ax.ColorOrder(2,:));
 %
 %    Y' * X
 %
-% *Works!* Because we transposed (|'|) the |Y| variable.
+% _Works!_ Because we transposed (|'|) the |Y| variable.
 %
+%
+% We will cover more about matrix operations in the *Vectorization* course.
 %
 %% Solving Systems of Linear Equations
 % Some useful operators are the 
@@ -379,3 +488,4 @@ line(tSuper,R_Super,'color','r');
 %@
 d = (R'/T')';
 c == d
+isequal(c,d)

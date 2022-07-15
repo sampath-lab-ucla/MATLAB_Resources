@@ -82,7 +82,7 @@ isequal(sum(values),summedValues)
 
 %%%
 % Notice how we update |summedValues| on each iteration just as we did above but
-% stimply used an iterator instead of rewriting the code with only the index changed.
+% simply used an iterator instead of rewriting the code with only the index changed.
 % We can use |for| in another way as well. In MATLAB, the iterator variable is
 % defined by a row vector, that is it will only iterate in a row-wise manner. Armed
 % with this information let's reduce our code footprint slightly.
@@ -190,12 +190,16 @@ isequal(mean(values),meanValues)
 
 %!
 rng(1984)
-dataMatrix = randn(5,10) * 2 + ((1:5).^2).';
+groupMatrix = repmat((1:5)',1,10)
+dataMatrix = randn(5,10) * 2 + ((1:5).^2).'
 figure("color",[1,1,1]);
-axes("nextplot",'add');
-plot(1:5,dataMatrix,'-.o');
-xlabel("Index");
-ylabel("Value");
+ax = axes();
+ax.XLabel.String = "Index";
+ax.YLabel.Interpreter = 'latex';
+ax.YLabel.String = "$f(\mathrm{Index})$";
+
+line(ax,groupMatrix,dataMatrix,'linestyle','none','marker','o');
+ax.XLim = ax.XLim + diff(ax.XLim).*[-0.05,0.05]; % pad xaxis by 5% on both sides
 
 %%%
 % Now, we can initialize our storage variable which will be a 5 element column
@@ -229,7 +233,7 @@ isequal(rowMeans,mean(dataMatrix,2))
 %!
 rng(2022); % random seed
 % construct random normal data vector
-datVec = reshape(randn(10,5) * 2 + ((0:5:20).^2),1,[]); %row vector
+datVec = reshape(randn(10,5) * 10 + ((0:5:20).^2),1,[]); %row vector
 % construct ordered grouping
 grpInds = reshape(ones(10,1) * (1:5),1,[]);
 % shuffle data
@@ -254,7 +258,7 @@ end
 %!
 % use line() to add the group means to plot
 line(groups,groupMeans,'linestyle','none','color','r','marker','+','markersize',12);
-xlabel("Index");
+xlabel("Group Number");
 ylabel("Value");
 
 %% Loop execution control
@@ -301,12 +305,12 @@ end
 % of data, we may encounter a data file that isn't the correct format or type. We   
 % would want to skip that file. It might look something like this:
 %
-%   fileList = dir("*.mat");
+%   fileList = dir("*.mat"); 
 %   for file = fileList'
 %     S = load(file.name);
 %     % Check for a DATA variable
 %     if ~isfield(S,'DATA') % read: if 'DATA' is not a field of S
-%       % No DATA varaible so skip this file
+%       % No DATA variable so skip this file
 %       continue;
 %     end
 %     % the code below only runs when DATA is detected
@@ -333,15 +337,172 @@ end
 %@
 for num = 1:50
   if mod(num,7)
-    disp(num)
+    continue;
+  end
+  disp(num);
+end
+
+%%% *Task 5*
+% Can you perform the same task without using |continue|?
+%
+
+%@
+for num = 1:50
+  if ~mod(num,7)
+    disp(num);
   end
 end
 
 %% Vectorized Operations
 % As we saw in the Array Math module, MATLAB(R) has a number of built-in features 
-% that allow for easy manipulation of data. So far, we have been talking about 
-% looping over vectors and producing either a new value for each iteration, a 
-% cumulative value updated at each iteration, or displaying some value. In the 
-% following section, we will combine these principals to generate a simple analysis. 
+% that allow for easy manipulation of data in a particular dimension. In this module,
+% we have explored the underlying iterative processing that the built-in functions
+% rely on, which is mainly |for| loops. One thing we have to keep in mind is that
+% MATLAB is a matrix calculator first and foremost. That is, the default behavior of
+% any operator is to function in a manner consistent with operations in linear
+% algebra.
 % 
+% A vectorized operation in MATLAB is simply a process that runs over all elements of
+% an array without additional input from the user. For example, the following
+% operation requires a single line of code in MATLAB where other languages would
+% require a |for| loop.
+%
+% $$a\cdot b=\sum_{i=1}^n a_i b_i$$
 % 
+%%%
+% In MATLAB we can perfom this inner (tensor) product (see
+% <https://www.mathworks.com/help/matlab/ref/dot.html?searchHighlight=dot&s_tid=srchtitle_dot_1
+% |dot|>) by simply matrix multiplying the row vector |a| by the column vector |b|.
+% 
+
+%!
+% define variables
+a = ones(1,5); % row
+b = ones(5,1) + 2; %col
+
+% compute inner product
+scalarDot = a * b; 
+
+%%%
+% Note that the matrix multiplication matrices, |a| and |b|, must have the same
+% _inner dimension_. More generally, this is because the matrix operator |*| performs
+% the following product-sum:
+%
+% $$C(i,j) = \sum_{k=1}^n\, A(i,k)B(k,j)$$.
+%
+%%%
+% In this case you can see that the number of columns in |A| must be equal to the
+% number of rows in |B|.
+% 
+%%% *Task 6*
+% The above example would require at least 1 |for| loop and a variable to update the
+% cumulative sum. Compute the product using at least 1 loop and only multiplying two 
+% scalars, i.e., don't % use MATLAB's 
+% <https://www.mathworks.com/help/matlab/ref/mtimes.html matrix> or
+% <https://www.mathworks.com/help/matlab/ref/times.html array> multiplication. The
+% sum should be stored in a variable called |scalarDotCumulative|.
+
+%!
+scalarDotCumulative = 0; % initialize the sum process
+%@
+for idx = 1:numel(a)
+  scalarDotCumulative = scalarDotCumulative + a(idx) * b(idx);
+end
+
+%!
+% Compare to matrix operation:
+isequal(scalarDot,scalarDotCumulative)
+
+%%%
+% From _Task 6_, you can see how MATLAB performs two simultaneous actions with the
+% matrix multiplication operator, |*|. This is the default bhavior when |a| and |b|
+% are the same size but transposed to each other. So if we wanted to compute the
+% squared magnitude of column vector |M|, we would need to 
+% <https://www.mathworks.com/help/matlab/ref/transpose.html transpose> it in the 
+% first argument position such that we ended up with:
+% 
+
+%!
+M = ones(10,1) ./ 2;
+mDot = M.' * M;
+%
+%%%
+% Here, again, we see MATLAB's vectorization power with the transpose operator, |.'|.
+% When MATLAB parses this statement, it follows an order of operations and first
+% performs the transpose, then the matrix calculation. The transpose would look
+% something like:
+%
+%   sizeM = size(M);
+%   M_t = nan(sizeM(2:-1:1));
+%   for idx = 1:numel(M);
+%     M_t(idx) = M(idx);
+%   end
+%
+%%%
+% The above code example would have to run and then MATLAB could perform the next 2
+% steps in the product calculation, the multiplication and the sum. With this
+% knowledge, we can see just how to utilize vectorization and compute the inner
+% product _manually_.
+% 
+
+%!
+mDotMult = sum( M .* M ); % using array multiplication
+mDotPow = sum( M.^2 );  % using array power
+
+% compare:
+isequal(mDot, mDotMult, mDotPow)
+
+%%%
+% Note: MATLAB utlizes the <https://en.wikipedia.org/wiki/Copy-on-write
+% copy-on-write> memory management protocol, which allows it to rapidly create new
+% variables im memory that are copies of the original variables. In the case of an
+% array operation, e.g., |M.^2|, a new array is created from |M| with the operation
+% carried out. This is evident in the explanation of |transpose| above. This behavior
+% also allows MATLAB to consume and deallocate memory without requiring the
+% programmer to manage memory blocks. See
+% <https://www.mathworks.com/help/matlab/matlab_prog/avoid-unnecessary-copies-of-data.html
+% avoid copies> and
+% <https://www.mathworks.com/help/matlab/matlab_prog/strategies-for-efficient-use-of-memory.html
+% efficient memory use> for more information. You will not be tested on any of this
+% extra material.
+% 
+%% Matrix Operators
+% Now that we have an understanding of how MATLAB auto-magically vectorizes
+% operations for us, the table below gives a list of operators and their purpose for
+% *matrix* operations.
+%
+% <<lib/img/MatrixOperators.png>>
+% 
+%%%
+% *Compatibile sizes*
+% 
+% Most binary (two-input) operators and functions in MATLAB(R), e.g., |dot(A,B)| or |A * B|, 
+% support numeric arrays that have compatible sizes. Two inputs have compatible sizes
+% if, for every dimension, the dimension sizes of the inputs are either the same or 
+% one of them is 1. In the simplest cases, two array sizes are compatible if they 
+% are exactly the same or if one is a scalar. MATLAB implicitly expands arrays with 
+% compatible sizes to be the same size during the execution of the element-wise 
+% operation or function.
+% 
+% For 2D arrays, here are some combinations of scalars, vectors, and matrices that
+% have compatible sizes:
+%
+% <<lib/img/compatibleArrays.png>>
+%
+%%%
+% In the case of our inner product example above, we can utilize MATLAB's implicit
+% expansion rules and compute a vector of dot products of row vector |A| with matrix
+% |B|, given |B| has as many rows as |A| has columns.
+%
+%%%
+% Based on the above diagram of compatible sizes, we can do a number of other
+% operations that may not be obvious. In the previous module we discussed implicit
+% versus explicit operations. The 
+%% Array Operators
+% The syntax for element wise operations is slightly different. It is recommended to
+% use the correct syntax for the element wise operation even when performing implicit
+% expansion operations. Below is a table of array (element-wise) operators.
+%
+% <<lib/img/ArrayOperators.png>>
+%
+%
