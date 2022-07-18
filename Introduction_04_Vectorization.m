@@ -397,7 +397,7 @@ scalarDot = a * b;
 %%% *Task 6*
 % The above example would require at least 1 |for| loop and a variable to update the
 % cumulative sum. Compute the product using at least 1 loop and only multiplying two 
-% scalars, i.e., don't % use MATLAB's 
+% scalars, i.e., don't use MATLAB's 
 % <https://www.mathworks.com/help/matlab/ref/mtimes.html matrix> or
 % <https://www.mathworks.com/help/matlab/ref/times.html array> multiplication. The
 % sum should be stored in a variable called |scalarDotCumulative|.
@@ -466,43 +466,103 @@ isequal(mDot, mDotMult, mDotPow)
 % efficient memory use> for more information. You will not be tested on any of this
 % extra material.
 % 
-%% Matrix Operators
-% Now that we have an understanding of how MATLAB auto-magically vectorizes
-% operations for us, the table below gives a list of operators and their purpose for
-% *matrix* operations.
+%% Continued Vectorization
+% MATLAB also provides a convenient way to apply a function to multiple arrays at
+% once. For this example, we are going to introduce the anonymous function. In other
+% languages this is also referred to as a lambda function. In MATLAB, we can define a
+% function which must be written as a single, contiguous statement. The syntax is:
 %
-% <<lib/img/MatrixOperators.png>>
+%   fxName = @(arg1,arg2,...,argN) arg1 + arg2/arg3 - ... + argN;
+%   % use the function:
+%   result = fxName(a1,a2,...,aN);
 % 
 %%%
-% *Compatibile sizes*
-% 
-% Most binary (two-input) operators and functions in MATLAB(R), e.g., |dot(A,B)| or |A * B|, 
-% support numeric arrays that have compatible sizes. Two inputs have compatible sizes
-% if, for every dimension, the dimension sizes of the inputs are either the same or 
-% one of them is 1. In the simplest cases, two array sizes are compatible if they 
-% are exactly the same or if one is a scalar. MATLAB implicitly expands arrays with 
-% compatible sizes to be the same size during the execution of the element-wise 
-% operation or function.
-% 
-% For 2D arrays, here are some combinations of scalars, vectors, and matrices that
-% have compatible sizes:
+% The |@| sign designates a |function_handle| data class. Handles act as references
+% to other objects, typically a function. We can create anonymous functions that
+% override defaults of another function, or perform a task repeatedly that would 
+% otherwise be tedious to write. For example, the |mean| function does not omit |NaN|
+% values by default. To omit |NaN|s, we'd have to specify it on every call.
 %
-% <<lib/img/compatibleArrays.png>>
+% We can create an anonymous function to handle this for us like so:
 %
+
+%!
+noNanMean = @(v) mean(v,'omitnan');
+
+% use the function
+rng(1234)
+testData = randn(10,5) .* (1:5) + 2.^(0:4);
+testData(randi(10,1,1),randi(5,1,2)) = nan; % set 2 values to nans
+
+% calculate the mean normally
+meanWithNans = mean(testData)
+
+% calculate the mean with our anonymous function
+meanNoNans = noNanMean(testData)
+
+% compare
+meanWithNans == meanNoNans
+isequal(meanWithNans,meanNoNans)
+
+%%% *Task 7*
+% Create an anonymous function |demean| that calculates and removes the column means
+% from the input matrix, ignoring |NaN|s.
+%
+
+%@
+demean = @(v) v - mean(v,'omitnan');
+
+
 %%%
-% In the case of our inner product example above, we can utilize MATLAB's implicit
-% expansion rules and compute a vector of dot products of row vector |A| with matrix
-% |B|, given |B| has as many rows as |A| has columns.
+% Now that we have a little insight into how an anonymous function works, let's look
+% at an example of how we can use them to iterate a process. In this example, we will
+% create a sine wave generator that takes an amplitude and frequency (in Hz).
 %
+
+%!
+time = (0:1/1000:2).';
+makeSin = @(a,f) a.*sin(2.*pi.*f.*time);
+
 %%%
-% Based on the above diagram of compatible sizes, we can do a number of other
-% operations that may not be obvious. In the previous module we discussed implicit
-% versus explicit operations. The 
-%% Array Operators
-% The syntax for element wise operations is slightly different. It is recommended to
-% use the correct syntax for the element wise operation even when performing implicit
-% expansion operations. Below is a table of array (element-wise) operators.
+% Using a |for| loop, we could use our inline function to produce a matrix of sine
+% waves with varying amplitude and frequency:
 %
-% <<lib/img/ArrayOperators.png>>
+
+%!
+freqs = 2.^(0:2:10).';
+amps = ones(size(freqs)) ./ ((1:numel(freqs)).');
+
+% create and loop to produce the sine waves
+sineWaves = nan(numel(time),numel(freqs));
+for idx = 1:numel(freqs)
+  amp = amps(idx);
+  freq = freqs(idx);
+  sineWaves(:,idx) = makeSin(amp,freq);
+end
+
+%%%
+% Another option would be to use the |arrayfun| function to apply this directly to
+% the |freqs| and |amps| arrays.
 %
+
+%!
+sineWaves = arrayfun(makeSin,amps,freqs,'UniformOutput',false);
+sineWaves = [sineWaves{:}];
+
+% plot
+fig = figure('color',[1,1,1]);
+ax = axes(fig);
+ax.XLabel.String = "Time (sec)";
+ax.YLabel.String = "Y";
+
+line(ax,time,sum(sineWaves,2));
+
+%%%
+% Note: When |arrayfun| returns a non-scalar value, and |UniformOutput=false|, then
+% the results are returned in a |cell| array. We will discuss this and other
+% container genotypes in following modules. To get the values out of the |cell|
+% array, we can use the curly brackets, |{}|, and concatenate the vectors together
+% into columns.
 %
+
+

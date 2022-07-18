@@ -171,7 +171,8 @@ dualSequence = sequence ./ [1,10]
 %@
 A = zeros(5,1) + [1, 2, 3]
 
-%%% Task 2 Create another 5x3 matrix B where the first row is like in A, the second 
+%%% Task 2 
+% Create another 5x3 matrix B where the first row is like in A, the second 
 % row is 1/2 A, the third row is 1/3 A, and so on until the fifth row is 1/5 A.
 
 %@
@@ -351,31 +352,74 @@ legend(ax,'Location','northwest','Interpreter','latex');
 %%%
 % What do you notice about the bin sizes of the histograms?
 % 
+%% Matrix Operators
+% Now that we have an understanding of how MATLAB auto-magically vectorizes
+% operations for us, the table below gives a list of operators and their purpose for
+% *matrix* operations.
+%
+% <<lib/img/MatrixOperators.png>>
+% 
+%%%
+% *Compatibile sizes*
+% 
+% Most binary (two-input) operators and functions in MATLAB(R), e.g., |dot(A,B)| or |A * B|, 
+% support numeric arrays that have compatible sizes. Two inputs have compatible sizes
+% if, for every dimension, the dimension sizes of the inputs are either the same or 
+% one of them is 1. In the simplest cases, two array sizes are compatible if they 
+% are exactly the same or if one is a scalar. MATLAB implicitly expands arrays with 
+% compatible sizes to be the same size during the execution of the element-wise 
+% operation or function.
+% 
+% For 2D arrays, here are some combinations of scalars, vectors, and matrices that
+% have compatible sizes:
+%
+% <<lib/img/compatibleArrays.png>>
+%
+%%%
+% In the case of our inner product example above, we can utilize MATLAB's implicit
+% expansion rules and compute a vector of dot products of row vector |A| with matrix
+% |B|, given |B| has as many rows as |A| has columns.
+%
+%%%
+% Based on the above diagram of compatible sizes, we can do a number of other
+% operations that may not be obvious. In the previous module we discussed implicit
+% versus explicit operations. The 
+%% Array Operators
+% The syntax for element wise operations is slightly different. It is recommended to
+% use the correct syntax for the element wise operation even when performing implicit
+% expansion operations. Below is a table of array (element-wise) operators.
+%
+% <<lib/img/ArrayOperators.png>>
+%
 %% Matrix Multiplication
 % Matrix multiplication requires that the inner dimensions agree. The resultant 
 % matrix has the outer dimensions.
 % 
 % <<lib/img/matrixMult.png>>
 % 
+%%%%
+% The following code:
+% 
+%   X = [1 2; 3 4; 5 6];
+%   Y = [7; 8; 9];
+%   Y * X
 %
-%    X = [1 2; 3 4; 5 6];
-%    Y = [7; 8; 9];
-%    Y * X
+%%% 
+% *Gives the error:*
 %
-% *Gives an error:*
+%   Error using  * 
+%   Incorrect dimensions for matrix multiplication. Check
+%   that the number of columns in the first matrix
+%   matches the number of rows in the second matrix. To
+%   operate on each element of the matrix individually,
+%   use TIMES (.*) for elementwise multiplication.
 %
-%    Error using  * 
-%    Incorrect dimensions for matrix multiplication. Check
-%    that the number of columns in the first matrix
-%    matches the number of rows in the second matrix. To
-%    operate on each element of the matrix individually,
-%    use TIMES (.*) for elementwise multiplication.
+%%%
+% But the following expression _works_ because we transpose (|.'|) the |Y| vector.
 %
-%    Y' * X
+%   Y.' * X
 %
-% _Works!_ Because we transposed (|'|) the |Y| variable.
-%
-%
+%%%
 % We will cover more about matrix operations in the *Vectorization* course.
 %
 %% Solving Systems of Linear Equations
@@ -421,7 +465,7 @@ R = [ ...
 
 
 %%%
-% Then we can get the Least Squares solution to |c*T=R| by creating the matrix R 
+% Then we can get the Least Squares solution to |c*T=R| by creating the matrix |T| 
 % with two columns, 1 for each of the $\beta$ coefficients:
 % 
 
@@ -438,7 +482,15 @@ T = [ones(size(R)), t];
 %!
 c = T \ R
 
-
+%%%
+% Note that the above operation is equivalent to calculating the coefficients using
+% the Gram and moment matrices:
+% 
+% $$\hat{\beta}=(X^{\top}X)^{-1}X^{\top}y,$$
+%
+%%%
+% where $\hat{\beta}$ is the vector of coefficients for the least-squares fit.
+%
 %%%
 % Where the linear system is fit as |R = c(1) + c(2)*t| (note: |t| not |T|). We can 
 % then create an interpolated, or super-sampled line by creating a new |t| vector 
