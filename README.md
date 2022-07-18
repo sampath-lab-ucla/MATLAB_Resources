@@ -61,6 +61,13 @@ answerCode = "removed from live script, preserved in key live script";
 % Section content...
 ```
 
+The above section builds to the following:
+<img src="./lib/img/readmeExample.png" width="600px"></img>  
+
+A key is also built with the answer code shown:
+<img src="./lib/img/readmeExample_key.png" width="600px"></img>
+
+
 Upon the first build, a subdirectory named
 `_pkg` will be created to hold the generated live scripts. Future runs of `BUILD`
 will overwrite these files. Input arguments to the `BUILD` command can override the 
