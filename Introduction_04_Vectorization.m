@@ -415,7 +415,7 @@ isequal(scalarDot,scalarDotCumulative)
 
 %%%
 % From _Task 6_, you can see how MATLAB performs two simultaneous actions with the
-% matrix multiplication operator, |*|. This is the default bhavior when |a| and |b|
+% matrix multiplication operator, |*|. This is the default behavior when |a| and |b|
 % are the same size but transposed to each other. So if we wanted to compute the
 % squared magnitude of column vector |M|, we would need to 
 % <https://www.mathworks.com/help/matlab/ref/transpose.html transpose> it in the 
