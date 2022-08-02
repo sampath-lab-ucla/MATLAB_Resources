@@ -24,8 +24,7 @@ addpath(genpath('.\lib'));
 % from their ancestors, but have novel characteristics that separate them from 
 % their ancestors.
 % 
-% 
-% 
+% <<lib/img/oopConcepts.png>> 
 % 
 % OOP Concepts
 % 
@@ -53,8 +52,8 @@ addpath(genpath('.\lib'));
 % the point of inheritance. So while we could separate class definitions like 
 % this:
 % 
-% californiaQuail < Callipepla < Phasianidae < Galliformes < Aves < Sauropsida 
-% < Tetrapoda < Gnathostomata < Vertebrata < Olfactores < Chordate < Animalia
+%  californiaQuail < Callipepla < Phasianidae < Galliformes < Aves < Sauropsida 
+%  < Tetrapoda < Gnathostomata < Vertebrata < Olfactores < Chordate < Animalia
 % 
 % ... or something similar, let's not. You can imagine what properties each 
 % of the taxa would have and how they would be different from descendant to descendant. 
@@ -486,9 +485,6 @@ scQuail.call();
 % 
 % All scripts used to make this presentation are available in the |lib| folder. 
 % Be sure to check them out and see the help documation at the mathworks site 
-% for more information on making your own classes: <https://www.mathworks.com/help/matlab/object-oriented-programming.html 
-% OOP in MATLAB>.
-% 
-% 
-% 
-% -khris (August 2019)
+% for more information on making your own classes: 
+% <https://www.mathworks.com/help/matlab/object-oriented-programming.html OOP in MATLAB>.
+%
