@@ -24,8 +24,38 @@
 % comparisons to single values:
 %
 
+%!
+A = [0, 2, 6, 8, 0];
+
+any(A == 0)
+all(A < 0)
+
+%%%
+% For 2D arrays or larger, these two functions test along the first dimension if nothing else is
+% specified. To change this behavior, a dimension can be specified.
 
 %!
+rng(326)
+B = randi([-3,3],4,2);
+
+any(B == 1, 2)
+any(B == 0, 1)
+
+%%%
+% The argument 'all' will test the whole array.
+
+%!
+all(B < 1, 'all')
+
+%%% Task 1 Determine if the array B above contains negative numbers.
+
+%@
+any(B < 0, 'all')
+
+%%% Task 2 Which rows of B contains values equal or greater than 3? 
+
+%@
+find(any(B >= 3, 2))
 
 %%%
 % Below is a table of other functions we can use to evaluate statements as logical
@@ -72,6 +102,40 @@
 % <<lib/img/ifElseIf.png>>
 % 
 %
+% Consider the variable v:
+
+%!
+v = randi([-10,10]);
+
+%%% Task 1 Make a decission tree that operates on v and displays "small" 
+%%% for positive values smaller than 4, "large" for values larger than 4,
+%%% "equal" for values equal to 4, and "negative" for values smaller than
+%%% 0.
+
+%@
+if v < 4 && v >= 0
+  disp("small");
+elseif v > 4
+  disp("large");
+elseif v == 4
+  disp("equal");
+else
+  disp("negative")
+end
+
+%%% Task 2 Consider the matrix B in the previous section. Write a short
+%%% program that will return a variable C. If B contains any negative 
+%%% values C should be the sum of all
+%%% positive values in B. Otherwise C should be 0.
+
+%@
+if any(B < 0, "all")
+  C = sum(B(B > 0), "all");
+else
+  C = 0;
+end
+disp(C);
+
 %% The SWITCH
 % Similar to the |elseif| construct, the |switch| block allows us to define a set of
 % preferences, _cases_, that may alter the program flow. Switches are useful for
@@ -108,6 +172,53 @@
 % 
 % <<lib/img/switchCase.png>>
 % 
+%
+% Given the struct array retina, below:
+
+%! 
+retina = struct();
+retina(1).celltype = "rod";
+retina(2).celltype = "rod bipolar cell";
+retina(3).celltype = "cone";
+retina(4).celltype = "horizontal cell";
+
+%%% Task 1 Using a loop and a switch statement, make a new field in retina,
+%%% Vm, that contains the resting membrane potentials of the celltypes (-40
+%%% to the photoreceptors and -60 to the interneurons). 
+
+%@
+
+for idx = 1:numel(retina)
+  switch retina(idx).celltype
+    case {"rod", "cone"}
+      retina(idx).Vm = -40;
+    case {"rod bipolar cell", "horizontal cell"}
+      retina(idx).Vm = -60;
+  end
+end
+
+%%% Task 2 Find and the display the names of the cell types in retina that have a
+%%% resting membrane potential above -50 mV.
+
+%@
+for idx = 1:numel(retina)
+  if retina(idx).Vm > -50
+    disp(retina(idx).celltype);
+  end
+end
+
+%%% Task 3 Add another field "category" to retina that is the string "photoreceptor"
+%%% for photoreceptors and "interneuron" for all other celltypes.
+
+for idx = 1:numel(retina)
+  switch retina(idx).celltype
+    case {"rod", "cone"}
+      retina(idx).category = "photoreceptor";
+    otherwise
+      retina(idx).category = "interneuron";
+  end
+end
+
 %% Strings and Character Arrays
 % MATLAB has a whole library of functions and methods dedicated to parsing strings
 % and characters. If a string is not part of a categorical data-grouping, then we are
@@ -149,32 +260,67 @@
 %
 
 %!
-% Rikard, need string here
+labMembers = "Sam, Gordon, Rikard, Ala, Paul, Khris, Chris";
 
-%%% Where does the substring start?
+%%% Where does the substring "Paul" start?
 %
 % *Regular expression* approach:
 %
-% 
-% *Pattern*
-%
-%
-%%% Is the substring present?
+
+%! 
+regexp(labMembers, "Paul")
+% Or
+strfind(labMembers, "Paul")
+
+%%% Is the substring "Rikard" present?
 %
 % *Regular expression*
 %
+
+%! 
+~isempty(regexp(labMembers, "Rikard"))
+
 % 
+%%%
 % *Pattern*
 %
-%
+
+%!
+contains(labMembers, "Rikard")
+
+%%% Extract all members separated by a delimiter to a string Array
+
+%!
+lab  = split(labMembers, ', ');
+
 %% Modifying A String
 % Typical modifications to strings come in the form of insertion/deletion, case
 % changes, splitting, and extraction. 
 %
-%% Membership
-% We often need to to determin
-%% Advanced Matching And Tokenizing
-% MAYBE REMOVE THIS SECTION: I HAD INTENDED ON COVERING SOME ADVANCED REGEX,
-% LOOKAROUNDS, MULTIPLE MATCHES, SPLITTING ON TOKENS... BUT MAYBE IT IS A LITTLE TOO
-% MUCH.
+% For instance, the variable units below contains information on the units used
+% in two recording devices, separated by semicolon and spaces.
+
+%!
+units = {'x:sec;y:pA; x:sec;y:V'};
+
+%%% Task 1 Extract the x- and y-units from the recording devices and create
+%%% strings (x, and y for each device) that can be used to label the axes
+%%% in a figure.
+
+%@
+
+% split into devices by '; '
+deviceArray = split(units, '; ');
+xLabDev1 = {[replace( ...
+  extractBefore( ...
+  deviceArray{1}, ';'), 'x:', 'Time ('), ')']};
+yLabDev1 = {[replace( ...
+  extractAfter( ...
+  deviceArray{1}, ';'), 'y:', 'Current ('), ')']};
+xLabDev2 = {[replace( ...
+  extractBefore( ...
+  deviceArray{2}, ';'), 'x:', 'Time ('), ')']};
+yLabDev2 = {[replace( ...
+  extractAfter( ...
+  deviceArray{2}, ';'), 'y:', 'Voltage ('), ')']};
 
