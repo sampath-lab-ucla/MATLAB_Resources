@@ -15,7 +15,7 @@
 % 
 % * Element-wise comparisons
 % * Scalar expansion comparisons
-% * Multiple comparisons ( |&|,||| )
+% * Multiple comparisons |(&,|)|
 % * Membership determination
 % 
 %%%
@@ -260,57 +260,152 @@ end
 %
 
 %!
-labMembers = "Sam, Gordon, Rikard, Ala, Paul, Khris, Chris";
+labMembers = "sam, gordon, rikard, ala, paul, khris, chris";
 
 %%% Where does the substring "Paul" start?
 %
-% *Regular expression* approach:
+% _Regular expression_ approach:
 %
 
 %! 
-regexp(labMembers, "Paul")
-% Or
-strfind(labMembers, "Paul")
+regexp(labMembers, "paul")
+
+%%% 
+% _Pattern_ approach:
+%
+
+%!
+strfind(labMembers, "paul")
 
 %%% Is the substring "Rikard" present?
 %
-% *Regular expression*
+% _Regular expression_
 %
 
 %! 
-~isempty(regexp(labMembers, "Rikard"))
+~isempty(regexp(labMembers, "rikard","once"))
 
-% 
 %%%
-% *Pattern*
+% _Pattern_
 %
 
 %!
-contains(labMembers, "Rikard")
+contains(labMembers, "rikard")
 
-%%% Extract all members separated by a delimiter to a string Array
+%%% 
+% Extract all members separated by a delimiter to a string Array using |strsplit| or
+% |split| functions:
 
 %!
-lab  = split(labMembers, ', ');
+strsplit(labMembers, ',')
+lab = split(labMembers, ',')
+
+%%%
+% Notice the spaces are still present? We can trim them in a few ways. Using the
+% _regular expression_ approach, we can match the space with the pattern: |\s| and
+% replace it with an empty string (|""|) inside the |regexprep| function:
+%
+
+%!
+regexprep(lab,"\s","")
+
+%%%
+% MATLAB provides a convenient function for trimming spaces off the ends of a string
+% called |strtrim|.
+%
+
+%!
+lab = strtrim(lab)
 
 %% Modifying A String
 % Typical modifications to strings come in the form of insertion/deletion, case
 % changes, splitting, and extraction. 
 %
-% For instance, the variable units below contains information on the units used
+%%%
+% We can extract parts of a string in a number of ways. As we saw above, we can split
+% a string using a delimiter. In this case, we must be careful whether we have a
+% |string|, a |char array|, or a |cell string| (which is a |char array| inside a
+% |cell|. _As a personal preference (KG), I tend to convert all text to the |string|
+% class._ The difference between the types, as we discussed earlier in the course, is
+% the indexing syntax and the space consumed in memory. 
+%
+% Consider the variable we created above, |lab|, which is |string| array of lab
+% member names. The names are all lowercase and should have a proper case. To
+% set the first characters to uppercase we can extract the first letters of each
+% member, set it to uppercase and then store it back in the original array. Here are
+% a few approaches for that:
+%
+%%%
+% _Indexing_
+%
+
+%!
+
+% loop through lab and index to copy the first character
+firstLetters = strings(size(lab));
+for L = 1:numel(lab)
+  firstLetters(L) = lab{L}(1); % notice the {}
+end
+firstLetters = upper(firstLetters);
+
+% store letters back in lab, but we'll make a copy
+labCopy = lab;
+for L = 1:numel(lab)
+  labCopy{L}(1) = firstLetters(L); % notice the {}
+end
+disp(labCopy);
+
+%%%
+% _Pattern_
+%
+
+%!
+
+% extract the letters in each item at position 1
+firstLetters = extract(lab,1);
+% replace letters at position 1 with uppercase firstLetters
+labCopy = replaceBetween(lab,1,1,upper(firstLetters))
+
+%%%
+% _Regular Expression_
+%
+
+%!
+labCopy = regexprep(lab,"^\w{1}","${upper($&)}")
+
+%%%
+% Looks like magic! Regular expressions are incredibly powerful, but with that power
+% comes huge complexity. Fortunately, MATLAB has other methods for dealing with
+% strings.
+%
+%%%
+% For instance, the variable |units| below contains information on the units used
 % in two recording devices, separated by semicolon and spaces.
 
 %!
 units = {'x:sec;y:pA; x:sec;y:V'};
 
-%%% Task 1 Extract the x- and y-units from the recording devices and create
-%%% strings (x, and y for each device) that can be used to label the axes
-%%% in a figure.
+%%% 
+% *Task 1* 
+% 
+% Extract the x- and y-units from the recording devices and store them in a variable
+% named |deviceArray|. _It should be a 2-element array with x and y units in each
+% element._
 
 %@
 
 % split into devices by '; '
 deviceArray = split(units, '; ');
+
+%%%
+% *Task 2*
+%
+% Create strings (x, and y for each device) that can be used to label the axes
+% in a figure. The format should be: 'LABEL (UNIT)', where label would, e.g., Time,
+% for the sec units. 
+%
+
+%@
 xLabDev1 = {[replace( ...
   extractBefore( ...
   deviceArray{1}, ';'), 'x:', 'Time ('), ')']};
@@ -324,3 +419,8 @@ yLabDev2 = {[replace( ...
   extractAfter( ...
   deviceArray{2}, ';'), 'y:', 'Voltage ('), ')']};
 
+%%%
+% It should be noted that the _pattern_ approach is much more extensible than we've
+% demonstrated here. String operations could be an entire course on its own. Even so,
+% we hope we have given enough of an introduction that you should be able accomplish
+% much of we need done in our analyses. 
